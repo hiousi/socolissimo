@@ -140,6 +140,7 @@ class Socolissimo extends CarrierModule
 				|| !Configuration::updateValue('SOCOLISSIMO_SUP', true)
 				|| !Configuration::updateValue('SOCOLISSIMO_USE_FANCYBOX', false)
 				|| !Configuration::updateValue('SOCOLISSIMO_USE_IFRAME', true)
+				|| !Configuration::updateValue('SOCOLISSIMO_CREATE_SHIPPING_ADDRESS', true)
 				|| !$this->registerHook('extraCarrier')
 				|| !$this->registerHook('AdminOrder')
 				|| !$this->registerHook('updateCarrier')
@@ -210,6 +211,7 @@ class Socolissimo extends CarrierModule
 		Configuration::deleteByName('SOCOLISSIMO_SUP_BELG');
 		Configuration::deleteByName('SOCOLISSIMO_SUP_URL');
 		Configuration::deleteByName('SOCOLISSIMO_OVERCOST_TAX');
+		Configuration::deleteByName('SOCOLISSIMO_CREATE_SHIPPING_ADDRESS');
 
 		if (!parent::uninstall()
 				|| !Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'socolissimo_delivery_info`')
@@ -335,6 +337,8 @@ class Socolissimo extends CarrierModule
 		$id_socolissimo = Configuration::get('SOCOLISSIMO_CARRIER_ID');
 		$id_socolissimo_cc = Configuration::get('SOCOLISSIMO_CARRIER_ID_SELLER');
 
+		$create_address = Tools::getValue('create_address', Configuration::get('SOCOLISSIMO_CREATE_SHIPPING_ADDRESS'));
+
 		$this->context->smarty->assign(array(
 			'moduleDir' => $module_dir,
 			'id_user' => $id_user,
@@ -356,6 +360,7 @@ class Socolissimo extends CarrierModule
 			'carrier_socolissimo_cc' => $carrier_socolissimo_cc,
 			'id_socolissimo' => $id_socolissimo,
 			'id_socolissimo_cc' => $id_socolissimo_cc,
+			'create_address' => $create_address
 		));
 
 		return $this->_html .= $this->fetchTemplate('back_office.tpl');
@@ -554,7 +559,8 @@ class Socolissimo extends CarrierModule
 					&& Configuration::updateValue('SOCOLISSIMO_OVERCOST', (float)Tools::getValue('overcost'))
 					&& Configuration::updateValue('SOCOLISSIMO_SUP_URL', Tools::getValue('url_sup'))
 					&& Configuration::updateValue('SOCOLISSIMO_OVERCOST_TAX', Tools::getValue('id_tax_rules_group'))
-					&& Configuration::updateValue('SOCOLISSIMO_SUP', (int)Tools::getValue('sup_active')))
+					&& Configuration::updateValue('SOCOLISSIMO_SUP', (int)Tools::getValue('sup_active'))
+					&& Configuration::updateValue('SOCOLISSIMO_CREATE_SHIPPING_ADDRESS', (int)Tools::getValue('create_address')))
 			{
 				//save old carrier id if change
 				if (!in_array((int)Tools::getValue('carrier'), explode('|', Configuration::get('SOCOLISSIMO_CARRIER_ID_HIST'))))
@@ -782,7 +788,7 @@ class Socolissimo extends CarrierModule
 
 	public function hookNewOrder($params)
 	{
-		if ($params['order']->id_carrier != Configuration::get('SOCOLISSIMO_CARRIER_ID'))
+		if ($params['order']->id_carrier != Configuration::get('SOCOLISSIMO_CARRIER_ID') || !Configuration::get('SOCOLISSIMO_CREATE_SHIPPING_ADDRESS'))
 			return;
 
 		$order = $params['order'];

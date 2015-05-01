@@ -156,6 +156,14 @@
             </select>
             <p>{l s='Re allocation of SoColissimo CC id carrier.' mod='socolissimo'}</p>
         </div>
+        <label>{l s='Create a new address' mod='socolissimo'} : </label>
+        <div class="margin-form">
+            <input type="radio" name="create_address" id="create_address_on" value="1" {if isset($create_address) && $create_address}checked="checked" {/if}/>
+            <label class="t" for="active_on"> <img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '" /></label>
+            <input type="radio" name="create_address" id="active_off" value="0" {if isset($create_address) && !$create_address}checked="checked"{/if}/>
+                   <label class="t" for="active_off"> <img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '" /></label>
+            <p>{l s='Socolissimo will create a new shipping address for the customer.' mod='socolissimo'}</p>
+        </div>
         <div class="margin-form">
             <input type="submit" value="{l s='Save' mod='socolissimo'}" name="submitSave" class="button" style="margin:10px 0px 0px 25px;" />
         </div>
