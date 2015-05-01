@@ -1070,6 +1070,7 @@ class Socolissimo extends CarrierModule
 			$new_address->city = $return['prtown'];
 			$new_address->id_country = $iso_code;
 			$new_address->alias = 'So Colissimo - '.date('d-m-Y');
+			$new_address->phone_mobile = $return['cephonenumber'];
 
 			if (!in_array($return['delivery_mode'], array('DOM', 'RDV')))
 			{
@@ -1095,7 +1096,7 @@ class Socolissimo extends CarrierModule
 		}
 		return (int)$ps_address->id;
 	}
-
+isSameAddress
 	public function checkZone($id_carrier)
 	{
 		return (bool)Db::getInstance()->getRow('SELECT * FROM '._DB_PREFIX_.'carrier_zone WHERE id_carrier = '.(int)$id_carrier);
